@@ -1,0 +1,5326 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "dev-plm 在线协作 API · 设计契约",
+    "description": "仅设计，未实现后端、数据库或协作客户端。项目事实源于文件；在线数据库提供派生读模型，讨论与认领可为数据库真源并须导出。离线站不依赖此 API。",
+    "version": "0.3.0"
+  },
+  "servers": [
+    {
+      "url": "https://dev.dev-plm.example.invalid",
+      "description": "开发设计地址，未部署",
+      "x-environment": "development"
+    },
+    {
+      "url": "https://test.dev-plm.example.invalid",
+      "description": "测试设计地址，未部署",
+      "x-environment": "testing"
+    },
+    {
+      "url": "https://dev-plm.example.invalid",
+      "description": "生产设计地址，未部署",
+      "x-environment": "production"
+    }
+  ],
+  "paths": {
+    "/v1/auth/token": {
+      "post": {
+        "tags": [
+          "身份认证"
+        ],
+        "summary": "取得在线协作访问令牌",
+        "description": "自定义对接设计，最终身份提供方待实现阶段确认；不声称是 OAuth。租户由认证身份与授权映射确定，不从任意请求正文信任。",
+        "operationId": "issueAccessToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              },
+              "examples": {
+                "design": {
+                  "summary": "设计示例；无在线服务，所有认证占位值无效",
+                  "value": {
+                    "identifier": "DESIGN-USER",
+                    "credential": "DESIGN_ONLY_NOT_A_CREDENTIAL"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "access_token": "DESIGN_ONLY_NOT_A_VALID_TOKEN",
+                      "token_type": "Bearer",
+                      "expires_in": 900
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "认证材料无效，不能换取令牌。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "INVALID_CREDENTIALS",
+                      "message": "认证材料无效，不能换取令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-TENANT-ID"
+        ]
+      }
+    },
+    "/v1/projects": {
+      "get": {
+        "tags": [
+          "项目事实"
+        ],
+        "summary": "列出可访问项目",
+        "description": "设计契约；本轮无服务实现。",
+        "operationId": "listProjects",
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projects"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "items": [
+                        {
+                          "id": "dev-plm",
+                          "name": "dev-plm",
+                          "type": "software",
+                          "example": false,
+                          "stage": "第3轮进行中",
+                          "source_path": "projects/dev-plm/project.yaml"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-requirements": [
+          "DEV-REQ-006",
+          "DEV-REQ-008",
+          "DEV-REQ-009",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [
+          "DEV-UI-PROJECTS"
+        ],
+        "x-fields": [
+          "DEV-FLD-PROJECT-ID",
+          "DEV-FLD-PROJECT-TYPE",
+          "DEV-FLD-TENANT-ID",
+          "DEV-FLD-SOURCE-PATH"
+        ]
+      }
+    },
+    "/v1/projects/{project_id}/requirements": {
+      "get": {
+        "tags": [
+          "项目事实"
+        ],
+        "summary": "读取项目需求原文与状态",
+        "description": "设计契约；本轮无服务实现。",
+        "operationId": "listRequirements",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            },
+            "examples": {
+              "design": {
+                "value": "dev-plm"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requirements"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "items": [
+                        {
+                          "id": "DEV-REQ-010",
+                          "title": "从用户原话看到真实改动",
+                          "original": "每次写下新提示词，Agent 对我的项目做了哪些调整、具体在哪个环节变了，要能看见",
+                          "status": "本轮进行中",
+                          "source_path": "projects/dev-plm/requirements/DEV-REQ-010.md"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-003",
+          "DEV-REQ-008",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [
+          "DEV-UI-REQUIREMENTS"
+        ],
+        "x-fields": [
+          "DEV-FLD-PROJECT-ID",
+          "DEV-FLD-REQUIREMENT-ID",
+          "DEV-FLD-ORIGINAL",
+          "DEV-FLD-STATUS",
+          "DEV-FLD-SOURCE-PATH"
+        ]
+      }
+    },
+    "/v1/requirements/{requirement_id}/changes": {
+      "get": {
+        "tags": [
+          "项目事实"
+        ],
+        "summary": "读取需求关联变更",
+        "description": "设计契约；本轮无服务实现。",
+        "operationId": "listRequirementChanges",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "requirement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Requirement Id"
+            },
+            "examples": {
+              "design": {
+                "value": "DEV-REQ-008"
+              }
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Changes"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "items": [
+                        {
+                          "id": "CHG-002",
+                          "title": "第2轮：文件驱动的多项目工作台",
+                          "requirements": [
+                            "DEV-REQ-005",
+                            "DEV-REQ-006",
+                            "DEV-REQ-008"
+                          ],
+                          "commits": [
+                            "d126b25ef7e4813801d8dfada7ec6213e766b4c4"
+                          ],
+                          "narrative": "变更单作者自述，详见源文件；不替代下方 Git 事实。",
+                          "source_path": "projects/dev-plm/changes/CHG-002.md"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-003",
+          "DEV-REQ-010",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [
+          "DEV-UI-REQUIREMENTS",
+          "DEV-UI-CHANGES"
+        ],
+        "x-fields": [
+          "DEV-FLD-REQUIREMENT-ID",
+          "DEV-FLD-CHANGE-ID",
+          "DEV-FLD-COMMIT-SHA"
+        ]
+      }
+    },
+    "/v1/changes/{change_id}/diff": {
+      "get": {
+        "tags": [
+          "项目事实"
+        ],
+        "summary": "读取 Git 客观差异",
+        "description": "仅从预登记且授权的本地仓库提取 Git 事实。不可达时返回明确 unavailable 与原因、空文件列表，不能用 Agent 自述补齐。",
+        "operationId": "getChangeDiff",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Change Id"
+            },
+            "examples": {
+              "design": {
+                "value": "CHG-002"
+              }
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeDiff"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "change_id": "CHG-002",
+                      "status": "available",
+                      "source": "git",
+                      "files": [
+                        {
+                          "path": "DESIGN-EXAMPLE.txt",
+                          "added": 1,
+                          "deleted": 0,
+                          "hunks": [
+                            {
+                              "old_start": 0,
+                              "old_count": 0,
+                              "new_start": 1,
+                              "new_count": 1,
+                              "lines": [
+                                "+这是 diff 返回格式的设计示例，不是实际仓库差异。"
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "notice": "此 examples 仅说明返回结构；实际 Git 差异必须运行时从登记仓库提取。"
+                    }
+                  },
+                  "unavailable": {
+                    "summary": "仓库不可达的明确降级示例",
+                    "value": {
+                      "change_id": "CHG-EXAMPLE",
+                      "status": "unavailable",
+                      "source": "git",
+                      "files": [],
+                      "notice": "设计示例：登记仓库不可达，无法提取版本历史。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-010",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [
+          "DEV-UI-CHANGES"
+        ],
+        "x-fields": [
+          "DEV-FLD-CHANGE-ID",
+          "DEV-FLD-COMMIT-SHA",
+          "DEV-FLD-DIFF-STATUS",
+          "DEV-FLD-DIFF-TEXT",
+          "DEV-FLD-REPO-PATH"
+        ]
+      }
+    },
+    "/v1/sync-jobs": {
+      "post": {
+        "tags": [
+          "文件同步"
+        ],
+        "summary": "从登记文件快照构建派生读模型",
+        "description": "202 仅接受同步任务。验证所有来源和引用后才原子发布投影；拒绝接受客户端任意数据库行或任意本地路径作为项目事实。",
+        "operationId": "startProjection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-REQUEST-001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncRequest"
+              },
+              "examples": {
+                "design": {
+                  "summary": "设计示例；无在线服务，所有认证占位值无效",
+                  "value": {
+                    "project_id": "dev-plm",
+                    "source_snapshot": "DESIGN-SNAPSHOT-NOT-A-REAL-HASH"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncJob"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "id": "DESIGN-SYNC-001",
+                      "state": "queued",
+                      "source_snapshot": "DESIGN-SNAPSHOT-NOT-A-REAL-HASH",
+                      "message": "设计示例：已接收同步请求，尚未完成校验与发布。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-008",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-SOURCE-HASH",
+          "DEV-FLD-JOB-STATE",
+          "DEV-FLD-IDEMPOTENCY-KEY"
+        ]
+      }
+    },
+    "/v1/sync-jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "文件同步"
+        ],
+        "summary": "读取同步状态",
+        "description": "设计契约；本轮无服务实现。",
+        "operationId": "getProjection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Job Id"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-SYNC-001"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncJob"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "id": "DESIGN-SYNC-001",
+                      "state": "queued",
+                      "source_snapshot": "DESIGN-SNAPSHOT-NOT-A-REAL-HASH",
+                      "message": "设计示例：已接收同步请求，尚未完成校验与发布。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-008",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-SOURCE-HASH",
+          "DEV-FLD-JOB-STATE"
+        ]
+      }
+    },
+    "/v1/projects/{project_id}/discussions": {
+      "post": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "创建可导出的协作讨论",
+        "description": "仅数据库协作真源；不修改需求或项目状态。实际作者取认证上下文，正文不得夹带真实秘密。",
+        "operationId": "createDiscussion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            },
+            "examples": {
+              "design": {
+                "value": "dev-plm"
+              }
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-REQUEST-001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDiscussion"
+              },
+              "examples": {
+                "design": {
+                  "summary": "设计示例；无在线服务，所有认证占位值无效",
+                  "value": {
+                    "target_id": "DEV-REQ-011",
+                    "body": "设计示例：先确认讨论导出的恢复边界。"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussion"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "id": "DESIGN-DISCUSSION-001",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "body": "设计示例：先确认讨论导出的恢复边界。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-DISCUSSION-BODY",
+          "DEV-FLD-REVISION",
+          "DEV-FLD-IDEMPOTENCY-KEY",
+          "DEV-FLD-AUDIT-ACTOR"
+        ]
+      },
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取项目讨论",
+        "operationId": "listDiscussions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussions"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "items": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/discussions/{discussion_id}": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取讨论首帖",
+        "operationId": "getDiscussion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "discussion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Discussion Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussion"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "body": "虚构协作示例，用于说明接口格式。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      },
+      "patch": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "编辑本人讨论首帖",
+        "operationId": "updateDiscussion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "discussion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Discussion Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditBody"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "revision": 1,
+                    "body": "虚构协作示例，用于说明接口格式。"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussion"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "body": "虚构协作示例，用于说明接口格式。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      },
+      "delete": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "删除本人讨论首帖并保留墓碑",
+        "operationId": "deleteDiscussion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "discussion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Discussion Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionRequest"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "revision": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussion"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "body": "虚构协作示例，用于说明接口格式。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/discussions/{discussion_id}/posts": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取讨论回复",
+        "operationId": "listDiscussionPosts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "discussion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Discussion Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscussionPosts"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "items": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      },
+      "post": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "回复讨论",
+        "operationId": "createDiscussionPost",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "discussion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Discussion Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePost"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "body": "虚构协作示例，用于说明接口格式。"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscussionPost"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "discussion_id": "demo-discussion_id",
+                      "parent_post_id": "demo-parent_post_id",
+                      "body": "虚构协作示例，用于说明接口格式。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/discussion-posts/{post_id}": {
+      "patch": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "编辑本人回复",
+        "operationId": "updateDiscussionPost",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Post Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditBody"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "revision": 1,
+                    "body": "虚构协作示例，用于说明接口格式。"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscussionPost"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "discussion_id": "demo-discussion_id",
+                      "parent_post_id": "demo-parent_post_id",
+                      "body": "虚构协作示例，用于说明接口格式。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      },
+      "delete": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "删除本人回复并保留墓碑",
+        "operationId": "deleteDiscussionPost",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Post Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionRequest"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "revision": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscussionPost"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "discussion_id": "demo-discussion_id",
+                      "parent_post_id": "demo-parent_post_id",
+                      "body": "虚构协作示例，用于说明接口格式。",
+                      "revision": 1,
+                      "authority": "database",
+                      "export_status": "not_exported",
+                      "created_by": "owner",
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z",
+                      "deleted_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/projects/{project_id}/claims": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取项目认领",
+        "operationId": "listClaims",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(active|released|expired)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claims"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "items": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      },
+      "post": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "向已登记主体指派处理对象",
+        "operationId": "createClaim",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClaim"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "target_id": "DEV-REQ-011",
+                    "claimant_id": "maintainer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "claimant_id": "maintainer",
+                      "state": "active",
+                      "revision": 1,
+                      "authority": "database",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/claims/{claim_id}": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取认领",
+        "operationId": "getClaim",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "claim_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Claim Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "claimant_id": "maintainer",
+                      "state": "active",
+                      "revision": 1,
+                      "authority": "database",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      },
+      "patch": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "以版本检查变更协作认领状态",
+        "description": "设计说明：认领不是项目所有者；只有获授权身份可修改。旧 revision 返回 409，不静默覆盖。",
+        "operationId": "updateClaim",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "claim_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Claim Id"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-CLAIM-001"
+              }
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-REQUEST-001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClaim"
+              },
+              "examples": {
+                "design": {
+                  "summary": "设计示例；无在线服务，所有认证占位值无效",
+                  "value": {
+                    "state": "released",
+                    "revision": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "id": "DESIGN-CLAIM-001",
+                      "project_id": "dev-plm",
+                      "target_id": "DEV-REQ-011",
+                      "claimant_id": "DESIGN-ACTOR-001",
+                      "state": "released",
+                      "revision": 2,
+                      "authority": "database",
+                      "updated_by": "owner",
+                      "updated_at": "2026-09-05T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-CLAIMANT-ID",
+          "DEV-FLD-REVISION",
+          "DEV-FLD-IDEMPOTENCY-KEY",
+          "DEV-FLD-AUDIT-ACTOR",
+          "DEV-FLD-AUDIT-BEFORE-AFTER"
+        ]
+      }
+    },
+    "/v1/principals": {
+      "get": {
+        "tags": [
+          "项目事实"
+        ],
+        "summary": "读取同租户登记主体",
+        "operationId": "listPrincipals",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Principals"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "items": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/principals/{principal_id}/tasks": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取某人当前 active 认领",
+        "operationId": "listPrincipalTasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "principal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Principal Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claims"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "items": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/notifications": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "读取本人通知",
+        "operationId": "listNotifications",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notifications"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "items": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/notifications/{notification_id}": {
+      "patch": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "将本人通知标记已读",
+        "operationId": "markNotificationRead",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Notification Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkRead"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构输入示例",
+                  "value": {
+                    "read": true,
+                    "revision": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构格式示例，非真实业务回执",
+                    "value": {
+                      "id": "demo-record",
+                      "project_id": "dev-plm",
+                      "recipient_id": "owner",
+                      "payload": {},
+                      "created_at": "2026-09-05T12:00:00Z",
+                      "read_at": "2026-09-05T12:00:00Z",
+                      "revision": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": []
+      }
+    },
+    "/v1/projects/{project_id}/collaboration-exports": {
+      "post": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "导出协作真源与恢复清单",
+        "description": "202 仅排队；只有完成校验和原子落盘后的清单才证明文件可恢复。未导出的讨论和认领在删库后无法恢复。",
+        "operationId": "exportCollaboration",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Project Id"
+            },
+            "examples": {
+              "design": {
+                "value": "dev-plm"
+              }
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-REQUEST-001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              },
+              "examples": {
+                "design": {
+                  "summary": "设计示例；无在线服务，所有认证占位值无效",
+                  "value": {
+                    "scope": [
+                      "discussions",
+                      "claims",
+                      "audit"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "id": "DESIGN-EXPORT-001",
+                      "state": "queued",
+                      "message": "尚未形成导出文件，不能据此声称可恢复。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "当前身份没有此操作权限。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "FORBIDDEN",
+                      "message": "当前身份没有此操作权限。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "相同幂等键对应不同请求内容。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "相同幂等键对应不同请求内容。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "输入不符合契约。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "输入不符合契约。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-EXPORT-STATE",
+          "DEV-FLD-IDEMPOTENCY-KEY",
+          "DEV-FLD-AUDIT-ACTOR"
+        ]
+      }
+    },
+    "/v1/collaboration-exports/{export_id}": {
+      "get": {
+        "tags": [
+          "协作数据"
+        ],
+        "summary": "查询协作导出是否形成可恢复文件包",
+        "description": "设计契约；本轮无服务实现。",
+        "operationId": "getCollaborationExport",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Export Id"
+            },
+            "examples": {
+              "design": {
+                "value": "DESIGN-EXPORT-001"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "设计响应；不代表服务已运行。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                },
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "id": "DESIGN-EXPORT-001",
+                      "state": "queued",
+                      "message": "尚未形成导出文件，不能据此声称可恢复。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有有效访问令牌。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有有效访问令牌。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "对象不存在或对当前身份不可见。",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "design": {
+                    "summary": "设计示例；无在线服务，所有认证占位值无效",
+                    "value": {
+                      "code": "NOT_FOUND",
+                      "message": "对象不存在或对当前身份不可见。",
+                      "request_id": "DESIGN-REQUEST-001"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "明确错误码与请求回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "DEV-REQ-011",
+          "DEV-REQ-012"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "DEV-FLD-EXPORT-STATE"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccessToken": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "const": "Bearer",
+            "title": "Token Type"
+          },
+          "expires_in": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expires In"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ],
+        "title": "AccessToken"
+      },
+      "Actor": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "display_name"
+        ],
+        "title": "Actor"
+      },
+      "Change": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "requirements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Requirements"
+          },
+          "commits": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40,64}$"
+            },
+            "type": "array",
+            "title": "Commits"
+          },
+          "narrative": {
+            "type": "string",
+            "title": "Narrative"
+          },
+          "source_path": {
+            "type": "string",
+            "title": "Source Path"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "requirements",
+          "commits",
+          "narrative",
+          "source_path"
+        ],
+        "title": "Change"
+      },
+      "ChangeDiff": {
+        "properties": {
+          "change_id": {
+            "type": "string",
+            "title": "Change Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "no_history"
+            ],
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "const": "git",
+            "title": "Source"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/DiffFile"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "change_id",
+          "status",
+          "source",
+          "files",
+          "notice"
+        ],
+        "title": "ChangeDiff"
+      },
+      "Changes": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Change"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Changes"
+      },
+      "Claim": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "claimant_id": {
+            "type": "string",
+            "title": "Claimant Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "released",
+              "expired"
+            ],
+            "title": "State"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "authority": {
+            "type": "string",
+            "const": "database",
+            "title": "Authority"
+          },
+          "updated_by": {
+            "type": "string",
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "target_id",
+          "claimant_id",
+          "state",
+          "revision",
+          "authority",
+          "updated_by",
+          "updated_at"
+        ],
+        "title": "Claim"
+      },
+      "Claims": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Claim"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Claims"
+      },
+      "Conflict": {
+        "properties": {
+          "current_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Current Revision"
+          },
+          "changed_by": {
+            "$ref": "#/components/schemas/Actor"
+          },
+          "changed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Changed At"
+          },
+          "changed_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Changed Fields"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "current_revision",
+          "changed_by",
+          "changed_at",
+          "changed_fields",
+          "before",
+          "after"
+        ],
+        "title": "Conflict"
+      },
+      "CreateClaim": {
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Target Id"
+          },
+          "claimant_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Claimant Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target_id",
+          "claimant_id"
+        ],
+        "title": "CreateClaim"
+      },
+      "CreateDiscussion": {
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Body"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target_id",
+          "body"
+        ],
+        "title": "CreateDiscussion"
+      },
+      "CreatePost": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Body"
+          },
+          "parent_post_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Post Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "CreatePost"
+      },
+      "DiffFile": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "added": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Added"
+          },
+          "deleted": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted"
+          },
+          "hunks": {
+            "items": {
+              "$ref": "#/components/schemas/DiffHunk"
+            },
+            "type": "array",
+            "title": "Hunks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "path",
+          "added",
+          "deleted",
+          "hunks"
+        ],
+        "title": "DiffFile"
+      },
+      "DiffHunk": {
+        "properties": {
+          "old_start": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Old Start"
+          },
+          "old_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Old Count"
+          },
+          "new_start": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "New Start"
+          },
+          "new_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "New Count"
+          },
+          "lines": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "old_start",
+          "old_count",
+          "new_start",
+          "new_count",
+          "lines"
+        ],
+        "title": "DiffHunk"
+      },
+      "Discussion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "authority": {
+            "type": "string",
+            "const": "database",
+            "title": "Authority"
+          },
+          "export_status": {
+            "type": "string",
+            "enum": [
+              "not_exported",
+              "exported"
+            ],
+            "title": "Export Status"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_by": {
+            "type": "string",
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "target_id",
+          "body",
+          "revision",
+          "authority",
+          "export_status",
+          "created_by",
+          "created_at",
+          "updated_by",
+          "updated_at",
+          "deleted_at"
+        ],
+        "title": "Discussion"
+      },
+      "DiscussionPost": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "discussion_id": {
+            "type": "string",
+            "title": "Discussion Id"
+          },
+          "parent_post_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Post Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "authority": {
+            "type": "string",
+            "const": "database",
+            "title": "Authority"
+          },
+          "export_status": {
+            "type": "string",
+            "enum": [
+              "not_exported",
+              "exported"
+            ],
+            "title": "Export Status"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_by": {
+            "type": "string",
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "discussion_id",
+          "parent_post_id",
+          "body",
+          "revision",
+          "authority",
+          "export_status",
+          "created_by",
+          "created_at",
+          "updated_by",
+          "updated_at",
+          "deleted_at"
+        ],
+        "title": "DiscussionPost"
+      },
+      "DiscussionPosts": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DiscussionPost"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "DiscussionPosts"
+      },
+      "Discussions": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Discussion"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Discussions"
+      },
+      "EditBody": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Body"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision",
+          "body"
+        ],
+        "title": "EditBody"
+      },
+      "Error": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "AUTH_REQUIRED",
+              "INVALID_CREDENTIALS",
+              "FORBIDDEN",
+              "NOT_FOUND",
+              "REVISION_CONFLICT",
+              "IDEMPOTENCY_CONFLICT",
+              "VALIDATION_ERROR",
+              "SOURCE_VALIDATION_FAILED",
+              "EXPORT_FAILED",
+              "FILE_FACTS_READ_ONLY",
+              "SERVICE_UNAVAILABLE"
+            ],
+            "title": "Code",
+            "x-code-descriptions": {
+              "AUTH_REQUIRED": "没有有效访问令牌。",
+              "INVALID_CREDENTIALS": "认证材料无效，不能换取令牌。",
+              "FORBIDDEN": "当前身份没有此操作权限。",
+              "NOT_FOUND": "对象不存在或对当前身份不可见。",
+              "REVISION_CONFLICT": "协作对象已变化，请重新读取后处理冲突。",
+              "IDEMPOTENCY_CONFLICT": "幂等键已被不同内容使用，或同键请求仍在执行。",
+              "VALIDATION_ERROR": "输入不符合契约。",
+              "SOURCE_VALIDATION_FAILED": "项目文件校验失败，保留上一个可用读模型。",
+              "EXPORT_FAILED": "导出失败，未形成可恢复文件包。",
+              "FILE_FACTS_READ_ONLY": "F/G事实只允许通过文件同步修改。",
+              "SERVICE_UNAVAILABLE": "本机依赖或配置未就绪，请按回执重试。"
+            }
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "conflict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Conflict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "Error"
+      },
+      "ExportJob": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed"
+            ],
+            "title": "State"
+          },
+          "manifest_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest Path"
+          },
+          "checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checksum"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "manifest_path",
+          "checksum",
+          "message"
+        ],
+        "title": "ExportJob"
+      },
+      "ExportRequest": {
+        "properties": {
+          "scope": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "discussions",
+                "claims",
+                "audit",
+                "notifications"
+              ]
+            },
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "title": "Scope"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scope"
+        ],
+        "title": "ExportRequest"
+      },
+      "MarkRead": {
+        "properties": {
+          "read": {
+            "type": "boolean",
+            "const": true,
+            "title": "Read"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "read",
+          "revision"
+        ],
+        "title": "MarkRead"
+      },
+      "Notification": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "recipient_id": {
+            "type": "string",
+            "title": "Recipient Id"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "recipient_id",
+          "payload",
+          "created_at",
+          "read_at",
+          "revision"
+        ],
+        "title": "Notification"
+      },
+      "Notifications": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Notifications"
+      },
+      "Principal": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "actor_type": {
+            "type": "string",
+            "enum": [
+              "human",
+              "agent",
+              "service"
+            ],
+            "title": "Actor Type"
+          },
+          "roles": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "owner",
+                "maintainer",
+                "viewer"
+              ]
+            },
+            "type": "array",
+            "title": "Roles"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "actor_type",
+          "roles"
+        ],
+        "title": "Principal"
+      },
+      "Principals": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Principal"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Principals"
+      },
+      "Project": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "software",
+              "agent",
+              "aigc"
+            ],
+            "title": "Type"
+          },
+          "example": {
+            "type": "boolean",
+            "title": "Example"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "source_path": {
+            "type": "string",
+            "title": "Source Path"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "example",
+          "stage",
+          "source_path"
+        ],
+        "title": "Project"
+      },
+      "Projects": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Project"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Projects"
+      },
+      "Requirement": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "original": {
+            "type": "string",
+            "title": "Original"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source_path": {
+            "type": "string",
+            "title": "Source Path"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "original",
+          "status",
+          "source_path"
+        ],
+        "title": "Requirement"
+      },
+      "Requirements": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Requirement"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "Requirements"
+      },
+      "RevisionRequest": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision"
+        ],
+        "title": "RevisionRequest"
+      },
+      "SyncJob": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "validating",
+              "staging",
+              "published",
+              "failed"
+            ],
+            "title": "State"
+          },
+          "source_snapshot": {
+            "type": "string",
+            "title": "Source Snapshot"
+          },
+          "published_snapshot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published Snapshot"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "source_snapshot",
+          "published_snapshot",
+          "message"
+        ],
+        "title": "SyncJob"
+      },
+      "SyncRequest": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "source_snapshot": {
+            "type": "string",
+            "title": "Source Snapshot"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project_id",
+          "source_snapshot"
+        ],
+        "title": "SyncRequest"
+      },
+      "TokenRequest": {
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Identifier"
+          },
+          "credential": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Credential",
+            "writeOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "identifier",
+          "credential"
+        ],
+        "title": "TokenRequest"
+      },
+      "UpdateClaim": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "released"
+            ],
+            "title": "State"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "claimant_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimant Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state",
+          "revision"
+        ],
+        "title": "UpdateClaim"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "短期访问令牌；租户与角色从已验证身份获得。",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "身份认证",
+      "description": "未来在线身份入口，设计占位。"
+    },
+    {
+      "name": "项目事实",
+      "description": "读取文件派生数据与 Git 客观差异。"
+    },
+    {
+      "name": "文件同步",
+      "description": "验证和发布文件派生读模型。"
+    },
+    {
+      "name": "协作数据",
+      "description": "讨论、认领与导出，均仅为下一轮设计。"
+    }
+  ]
+}

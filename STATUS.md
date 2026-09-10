@@ -1,0 +1,1 @@
+Public source snapshot with fresh Git history. Includes offline views, a private FastAPI workbench, authorized live logs and project-document navigation. Private deployment data and production acceptance records are excluded. Optional maintenance is experimental and requires explicit local configuration.

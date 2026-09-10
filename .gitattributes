@@ -1,0 +1,3 @@
+* text=auto eol=lf
+/site/** linguist-generated=true
+/vendor/openapi/schemas/** linguist-vendored=true

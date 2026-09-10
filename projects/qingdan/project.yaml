@@ -1,0 +1,14 @@
+id: qingdan
+name: 轻单（示例）
+description: 个人任务 Web 应用：记录任务、查看截止日期，并切换完成状态。
+stage: 毛坯确认与契约完善
+updated: '2026-09-05T11:10:00+08:00'
+kind: web
+example: true
+repo: https://code.example.invalid/demo/qingdan.git
+branch: main
+local_path: examples/qingdan
+focus_requirement: DEMO-REQ-001
+demo_date: '2026-09-05'
+
+type: software

@@ -1,0 +1,538 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "事件收件箱 API · 虚构示例",
+    "version": "0.1.0-draft",
+    "description": "纯后端契约草案，无真实服务器。接收事件并给出回执；202 只表示已收件。所有登录与令牌示例明确无效。"
+  },
+  "servers": [
+    {
+      "url": "https://dev.event-inbox.example.invalid",
+      "description": "开发环境（虚构地址，未部署）",
+      "x-environment": "development"
+    },
+    {
+      "url": "https://test.event-inbox.example.invalid",
+      "description": "测试环境（虚构地址，未部署）",
+      "x-environment": "testing"
+    },
+    {
+      "url": "https://event-inbox.example.invalid",
+      "description": "生产环境（虚构地址，未部署）",
+      "x-environment": "production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "身份认证",
+      "description": "登记过的服务调用方取得短期令牌。"
+    },
+    {
+      "name": "事件",
+      "description": "授权收件、幂等重试与回执查询。"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/auth/token": {
+      "post": {
+        "operationId": "issueServiceToken",
+        "summary": "服务调用方取得短期访问令牌",
+        "tags": [
+          "身份认证"
+        ],
+        "security": [],
+        "description": "自定义服务身份认证契约，不声称为 OAuth。调用方登记后从 本机私有凭据登记（公开版省略编号） 领取实际值；文档占位文本不能登录。",
+        "x-requirements": [
+          "EVENT-REQ-001",
+          "EVENT-REQ-002"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "client_id"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "client_id",
+                  "client_secret"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "client_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "minLength": 1,
+                    "writeOnly": true,
+                    "description": "从 本机私有凭据登记（公开版省略编号） 获取实际值；示例文本明确无效。"
+                  }
+                }
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构示例；不代表已运行的接口",
+                  "value": {
+                    "client_id": "demo-orders-service",
+                    "client_secret": "DEMO_ONLY_NOT_A_CLIENT_SECRET"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "已签发短期令牌；示例值不可用。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "access_token": "DEMO_ONLY_NOT_A_VALID_TOKEN",
+                      "token_type": "Bearer",
+                      "expires_in": 900
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "登录凭据无效，无法签发访问令牌。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "INVALID_CREDENTIALS",
+                      "message": "登录凭据无效，无法签发访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "请求字段不符合契约，请检查必填项和字段格式。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "请求字段不符合契约，请检查必填项和字段格式。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events": {
+      "post": {
+        "operationId": "acceptEvent",
+        "summary": "接收事件并返回稳定回执",
+        "tags": [
+          "事件"
+        ],
+        "description": "服务按已验证调用方隔离事件。相同事件编号与相同正文重试返回原回执，不重复保存；相同编号不同内容返回 409。Idempotency-Key 同样受调用方范围约束。202 只表示事件与收件回执已保存，不代表下游处理完成。",
+        "x-requirements": [
+          "EVENT-REQ-001"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "event_id",
+          "event_type",
+          "occurred_at",
+          "payload",
+          "receipt_id",
+          "status",
+          "accepted_at",
+          "client_id"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "同一调用方的网络重试复用相同键；相同键必须对应相同正文。",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "examples": {
+              "demo": {
+                "value": "demo-event-request-001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventInput"
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构示例；不代表已运行的接口",
+                  "value": {
+                    "event_id": "demo-order-paid-001",
+                    "event_type": "order.paid",
+                    "occurred_at": "2026-09-05T04:00:00Z",
+                    "payload": {
+                      "order_id": "DEMO-ORDER-001"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "已收件，事件与回执已保存；不表示下游处理完成。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "receipt_id": "00000000-0000-4000-8000-000000000101",
+                      "event_id": "demo-order-paid-001",
+                      "status": "accepted",
+                      "accepted_at": "2026-09-05T04:00:01Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有访问令牌或令牌已过期，请重新取得访问令牌。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有访问令牌或令牌已过期，请重新取得访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "幂等键或事件编号已对应不同内容；按 code 区分冲突原因。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "同一幂等键对应了不同请求，请检查请求内容。"
+                    }
+                  },
+                  "eventConflict": {
+                    "summary": "同一调用方的相同事件编号携带了不同内容",
+                    "value": {
+                      "code": "EVENT_CONFLICT",
+                      "message": "同一调用方的事件编号对应了不同事件内容。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "请求字段不符合契约，请检查必填项和字段格式。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "请求字段不符合契约，请检查必填项和字段格式。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/receipts/{receipt_id}": {
+      "get": {
+        "operationId": "getReceipt",
+        "summary": "查询当前调用方的收件回执",
+        "tags": [
+          "事件"
+        ],
+        "description": "回执不存在或归属于其他调用方时统一返回 404。当前契约只提供收件状态，不推测下游处理状态。",
+        "x-requirements": [
+          "EVENT-REQ-002"
+        ],
+        "x-screens": [],
+        "x-fields": [
+          "event_id",
+          "receipt_id",
+          "status",
+          "accepted_at",
+          "client_id"
+        ],
+        "parameters": [
+          {
+            "name": "receipt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "examples": {
+              "demo": {
+                "value": "00000000-0000-4000-8000-000000000101"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "已找到当前调用方的收件回执。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "receipt_id": "00000000-0000-4000-8000-000000000101",
+                      "event_id": "demo-order-paid-001",
+                      "status": "accepted",
+                      "accepted_at": "2026-09-05T04:00:01Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "没有访问令牌或令牌已过期，请重新取得访问令牌。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有访问令牌或令牌已过期，请重新取得访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "接收回执不存在或不属于当前调用方。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "RECEIPT_NOT_FOUND",
+                      "message": "接收回执不存在或不属于当前调用方。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "先调用 issueServiceToken。示例 token 无效；本站不执行认证。"
+      }
+    },
+    "schemas": {
+      "EventInput": {
+        "type": "object",
+        "required": [
+          "event_id",
+          "event_type",
+          "occurred_at",
+          "payload"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "event_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Receipt": {
+        "type": "object",
+        "required": [
+          "receipt_id",
+          "event_id",
+          "status",
+          "accepted_at"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "receipt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted"
+            ],
+            "description": "仅表示已保存，不表示下游处理完成。"
+          },
+          "accepted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AccessToken": {
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "短期令牌。示例值明确无效，不对应任何真实凭据。"
+          },
+          "token_type": {
+            "type": "string",
+            "enum": [
+              "Bearer"
+            ]
+          },
+          "expires_in": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "有效期，单位为秒。"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "AUTH_REQUIRED",
+              "INVALID_CREDENTIALS",
+              "IDEMPOTENCY_CONFLICT",
+              "EVENT_CONFLICT",
+              "RECEIPT_NOT_FOUND",
+              "VALIDATION_ERROR"
+            ],
+            "description": "机器可判定的错误码；逐项中文含义见 x-code-descriptions。",
+            "x-code-descriptions": {
+              "AUTH_REQUIRED": "没有访问令牌或令牌已过期，请重新取得访问令牌。",
+              "INVALID_CREDENTIALS": "登录凭据无效，无法签发访问令牌。",
+              "IDEMPOTENCY_CONFLICT": "同一幂等键对应了不同请求，请检查请求内容。",
+              "EVENT_CONFLICT": "同一调用方的事件编号对应了不同事件内容。",
+              "RECEIPT_NOT_FOUND": "接收回执不存在或不属于当前调用方。",
+              "VALIDATION_ERROR": "请求字段不符合契约，请检查必填项和字段格式。"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "面向开发者的可读说明，不用于程序分支判断。"
+          }
+        }
+      }
+    }
+  }
+}

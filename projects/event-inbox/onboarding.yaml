@@ -1,0 +1,44 @@
+frontend:
+  applicable: false
+  language: 不适用
+  framework: 不适用：纯后端服务，没有网页或移动客户端
+  version: 不适用
+  install: 不适用
+  start: 不适用
+  port: null
+backend:
+  applicable: true
+  language: Python
+  framework: 标准库 HTTP 服务（示例，代码未提供）
+  version: '3.12'
+  install: 无第三方依赖
+  start: python -m inbox_service
+  port: 8090
+database:
+  engine: SQLite 3（Python 标准库 sqlite3）
+  start: 无独立进程；服务按 INBOX_DATABASE_PATH 打开数据库
+  migrate: python -m inbox_service.migrate
+configuration:
+- name: INBOX_DATABASE_PATH
+  purpose: 事件与收件回执的存储位置
+  source: 找服务负责人（示例）领取本地配置说明
+- name: INBOX_CLIENT_SECRET
+  purpose: 服务调用方换取短期访问令牌
+  source: 本机私有凭据登记（公开版省略编号）
+environments:
+- id: development
+  label: 开发
+  server_ref: development
+- id: testing
+  label: 测试
+  server_ref: testing
+- id: production
+  label: 生产
+  server_ref: production
+owners:
+- name: 接入负责人（示例）
+  scope: 上游事件约定、接收范围与验收条件
+- name: 服务负责人（示例）
+  scope: 接口、身份隔离、去重、数据库与配置登记
+- name: 运维负责人（示例）
+  scope: 环境准备、发布、观测与回退

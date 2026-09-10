@@ -1,0 +1,51 @@
+name: Publish reviewed public site
+
+# This repository is PUBLIC. Everything in site/ will become public.
+# Manual only: the user must review the clean source export before running this.
+'on':
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install build dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Restore fictional Git fixture from local bundle
+        run: git clone fixtures/agent-demo.bundle .work/agent-demo-history
+      - name: Build only the approved public data root
+        env:
+          DEVPLM_DATA_ROOTS: ''
+        run: python build.py --public --data-root projects
+      - name: Fail closed on actual publication contents
+        run: python tools/check_publish_safety.py site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy user-approved artifact
+        id: deployment
+        uses: actions/deploy-pages@v5

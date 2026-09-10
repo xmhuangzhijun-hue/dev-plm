@@ -1,0 +1,60 @@
+groups:
+- id: structure
+  title: 作品结构
+  objects:
+  - id: FILM-RW-001
+    title: 第一集：一分钟雨后
+    reqs:
+    - REQ-FILM-001
+    description: 三段各 20 秒，总计划 60 秒。
+    content: 这是企划结构，没有成片。
+    source: structure/episode-01.md
+  - id: SHOT-RW-001
+    title: 镜头一：等雨
+    reqs:
+    - REQ-FILM-001
+    - REQ-FILM-002
+    content: 00:00–00:20；固定机位，观察雨窗和人物等待。
+  - id: SHOT-RW-002
+    title: 镜头二：整理
+    reqs:
+    - REQ-FILM-001
+    - REQ-FILM-002
+    content: 00:20–00:40；手整理桌面，保持杯子与书的连续性。
+  - id: SHOT-RW-003
+    title: 镜头三：开窗
+    reqs:
+    - REQ-FILM-001
+    - REQ-FILM-002
+    content: 00:40–01:00；雨停、开窗，光线轻微变亮。
+- id: prompts
+  title: 生成提示词
+  objects:
+  - id: PROMPT-RW-001
+    title: 镜头一画面提示词草案
+    reqs:
+    - REQ-FILM-001
+    - REQ-FILM-002
+    content: 当前仅有未执行的提示词草案。
+    source: prompts/shot-01.md
+- id: assets
+  title: 素材清单
+  objects:
+  - id: ASSET-RW-PLAN
+    title: 素材准备清单（尚未制作）
+    reqs:
+    - REQ-FILM-001
+    - REQ-FILM-002
+    description: 背景、道具参考、雨声和片尾画面。
+    content: 没有图像、视频或音频文件，不声称完成生成。
+    source: assets/asset-plan.md
+- id: style
+  title: 风格设定
+  objects:
+  - id: STYLE-RW-LIGHT
+    title: 自然窗光与道具连续性
+    reqs:
+    - REQ-FILM-002
+    description: 低饱和灰蓝、暖白与固定物件关系。
+    content: 风格是制作约束，实际一致性待成片验收。
+    source: style/visual-style.md

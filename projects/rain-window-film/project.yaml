@@ -1,0 +1,12 @@
+id: rain-window-film
+name: 雨窗一分钟（虚构短片）
+type: aigc
+kind: web
+example: true
+description: 虚构 60 秒短片企划：三段分镜、生成提示词、素材清单与风格约束；没有生成视频或对外发布。
+stage: 作品结构与提示词草案
+updated: '2026-09-05T20:04:49+08:00'
+repo: https://code.example.invalid/fictional/rain-window-film.git
+branch: main
+local_path: examples/rain-window-film
+focus_requirement: REQ-FILM-001

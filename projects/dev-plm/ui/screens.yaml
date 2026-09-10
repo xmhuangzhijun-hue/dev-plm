@@ -1,0 +1,64 @@
+- id: DEV-UI-PROJECTS
+  title: 所有项目
+  route: '#projects'
+  status: 离线页面已自测；关联API仅设计，运行时不调用
+  purpose: 区分真实与示例项目，按项目类型进入资料。
+  reqs:
+  - DEV-REQ-002
+  - DEV-REQ-005
+  - DEV-REQ-006
+  - DEV-REQ-009
+  fields:
+  - DEV-FLD-PROJECT-ID
+  - DEV-FLD-PROJECT-TYPE
+- id: DEV-UI-REQUIREMENTS
+  title: 需求与迭代
+  route: '#p/dev-plm/requirements'
+  status: 离线页面已自测；关联API仅设计，运行时不调用
+  purpose: 保留原话、理解和验收条件，进入相关变更。
+  reqs:
+  - DEV-REQ-003
+  - DEV-REQ-005
+  - DEV-REQ-010
+  fields:
+  - DEV-FLD-REQUIREMENT-ID
+  - DEV-FLD-ORIGINAL
+  - DEV-FLD-STATUS
+- id: DEV-UI-CHANGES
+  title: 我说的那句话，导致了什么
+  route: '#p/dev-plm/impact/DEV-REQ-010'
+  status: 离线页面已自测；关联API仅设计，运行时不调用
+  purpose: 左侧需求原话；右侧分别阅读 Agent 自述、Git 文件摘要和真实 diff。
+  reqs:
+  - DEV-REQ-003
+  - DEV-REQ-010
+  fields:
+  - DEV-FLD-CHANGE-ID
+  - DEV-FLD-COMMIT-SHA
+  - DEV-FLD-DIFF-STATUS
+  - DEV-FLD-DIFF-TEXT
+- id: DEV-UI-ONBOARDING
+  title: 怎么动手
+  route: '#p/dev-plm/onboarding'
+  status: 离线页面已自测；关联API仅设计，运行时不调用
+  purpose: 找到代码、构建命令和角色分工；未实现后端明确不适用。
+  reqs:
+  - DEV-REQ-001
+  - DEV-REQ-005
+  - DEV-REQ-007
+  - DEV-REQ-012
+  fields:
+  - DEV-FLD-REPO-PATH
+- id: DEV-UI-FILES
+  title: 资料目录
+  route: '#p/dev-plm/files'
+  status: 离线页面已自测；关联API仅设计，运行时不调用
+  purpose: 从网页读到项目真源、契约、表结构与变更单。
+  reqs:
+  - DEV-REQ-002
+  - DEV-REQ-004
+  - DEV-REQ-008
+  - DEV-REQ-012
+  fields:
+  - DEV-FLD-SOURCE-PATH
+  - DEV-FLD-SOURCE-HASH

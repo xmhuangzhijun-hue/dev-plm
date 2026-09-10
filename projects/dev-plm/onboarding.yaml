@@ -1,0 +1,48 @@
+frontend:
+  applicable: true
+  language: 现有 HTML / CSS / JavaScript；未来协作前端采用 TypeScript（设计）
+  framework: 现有 src/ 原生离线网页；React + Vite 仅为未来协作前端设计
+  version: 现有构建要求 Python 3.10+；React/Vite 版本待实现时锁定
+  install: 现有网页无需 Node；构建使用仓库 requirements.txt 中的既有依赖，脚本不自动安装
+  start: python build.py，然后双击 site/index.html
+  port: null
+backend:
+  applicable: true
+  language: Python 3.13.4
+  framework: FastAPI 0.141.1；本机运行，16项真实数据库测试已通过；私网手机待验收
+  version: uvicorn 0.49.0；psycopg 3.3.5 已安装
+  install: 后端依赖见 backend/requirements.txt；须先准备本机秘密登记与 .env 非秘密引用
+  start: python tools/local_stack.py start（用户先安装登录Tailscale；仅私网HTTPS）
+  port: 8765
+database:
+  engine: PostgreSQL 17（本机实例，端口仅绑定127.0.0.1）
+  start: docker compose up -d --wait
+  migrate: python -m backend.manage migrate，然后 python -m backend.manage sync
+configuration:
+- name: DEVPLM_DB_ADMIN_SECRET / DEVPLM_DB_API_SECRET / DEVPLM_DB_SYNC_SECRET
+  purpose: 独立管理员/API/同步登录；.env只保存登记ID
+  source: 本机中央秘密库登记，实际值仅保存在受限秘密文件中
+- name: DEVPLM_JWT_SECRET
+  purpose: 短期令牌签名；.env只保存登记ID
+  source: 本机中央秘密库登记，实际值仅保存在受限秘密文件中
+- name: DEVPLM_ACCOUNTS_FILE
+  purpose: 非秘密登录主体与tenant/principal/credential_ref映射
+  source: 本机非秘密账号映射，角色来自governance.yaml
+- name: DEVPLM_DATA_ROOTS
+  purpose: 多个资料根，Windows分号分隔；默认projects
+  source: 命令行--data-root优先，否则环境变量/.env配置
+environments:
+- id: development
+  label: 开发设计环境（未部署）
+  server_ref: development
+- id: testing
+  label: 测试设计环境（未部署）
+  server_ref: testing
+- id: production
+  label: 生产设计环境（未部署）
+  server_ref: production
+owners:
+- name: 项目维护者
+  scope: 需求确认、验收和是否进入下一轮实现
+- name: 本轮开发 Agent
+  scope: 在授权范围内维护项目文件、页面与构建，并留下可验证证据

@@ -1,0 +1,108 @@
+{
+  "retrieved_at": "2026-09-05T11:26:57.898898+00:00",
+  "assets": [
+    {
+      "file": "schemas/oas-schema.json",
+      "source": "https://spec.openapis.org/oas/3.1/schema/2025-11-23",
+      "sha256": "1b8ccc6e34234b17536f2dd0eb3597142a32bd108438cd42471a5fca4c1a07ef",
+      "bytes": 33452,
+      "id": "https://spec.openapis.org/oas/3.1/schema/2025-11-23"
+    },
+    {
+      "file": "schemas/oas-schema-base.json",
+      "source": "https://spec.openapis.org/oas/3.1/schema-base/2025-11-23",
+      "sha256": "ab0bde84a429f43f280624f645a19d05c90b626e63862d7278074a465a20ff54",
+      "bytes": 721,
+      "id": "https://spec.openapis.org/oas/3.1/schema-base/2025-11-23"
+    },
+    {
+      "file": "schemas/oas-dialect.json",
+      "source": "https://spec.openapis.org/oas/3.1/dialect/2024-11-10",
+      "sha256": "647f32dfff64949d5020a28ecd1af4ffeffb1e9c695f861a52255a8004e07460",
+      "bytes": 1027,
+      "id": "https://spec.openapis.org/oas/3.1/dialect/2024-11-10"
+    },
+    {
+      "file": "schemas/oas-meta.json",
+      "source": "https://spec.openapis.org/oas/3.1/meta/2024-11-10",
+      "sha256": "80706a9a404affedbf84ac4dc1328c9ce0d2a00804cdfc4d95c0ddd0053121dd",
+      "bytes": 1957,
+      "id": "https://spec.openapis.org/oas/3.1/meta/2024-11-10"
+    },
+    {
+      "file": "schemas/jsonschema-2020-12.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/schema.json",
+      "sha256": "41da76f5afb7ce062d248f762463a92f7ca47e4e0f905b224ba6afeef91ded0f",
+      "bytes": 2452,
+      "id": "https://json-schema.org/draft/2020-12/schema"
+    },
+    {
+      "file": "licenses/OpenAPI-Apache-2.0.txt",
+      "source": "https://raw.githubusercontent.com/OAI/spec.openapis.org/main/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "file": "licenses/JSON-Schema-LICENSE.txt",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/main/LICENSE",
+      "sha256": "909b25a80d4945b21d3adb2fb17f90bf592e0274bdf117c069c088a8e44dc7b6",
+      "bytes": 11739
+    },
+    {
+      "file": "schemas/jsonschema-meta-applicator.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/applicator.json",
+      "sha256": "bf273b26f9f735b93ece78f2b61b36676e1d122ce78ab37ad5a2e45dfa1ca2b1",
+      "bytes": 1560,
+      "id": "https://json-schema.org/draft/2020-12/meta/applicator"
+    },
+    {
+      "file": "schemas/jsonschema-meta-content.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/content.json",
+      "sha256": "a10456605b2b5bb12a1b4dcfc0300f02f54d3e8bb3646bed7724583866627682",
+      "bytes": 423,
+      "id": "https://json-schema.org/draft/2020-12/meta/content"
+    },
+    {
+      "file": "schemas/jsonschema-meta-core.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/core.json",
+      "sha256": "21f79d143fab1f180245c331e5657057045b36794d41fe151e6e4fed65035299",
+      "bytes": 1471,
+      "id": "https://json-schema.org/draft/2020-12/meta/core"
+    },
+    {
+      "file": "schemas/jsonschema-meta-format-annotation.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/format-annotation.json",
+      "sha256": "5c79404f831dd905c0f40fefac7c6f3e51bf3729b4a876a5c2020178d97f3bcc",
+      "bytes": 342,
+      "id": "https://json-schema.org/draft/2020-12/meta/format-annotation"
+    },
+    {
+      "file": "schemas/jsonschema-meta-format-assertion.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/format-assertion.json",
+      "sha256": "6a5a8e13c605e3eff51f9bf8da18078880d81ff1634e391760ccc2e16ee2146f",
+      "bytes": 340,
+      "id": "https://json-schema.org/draft/2020-12/meta/format-assertion"
+    },
+    {
+      "file": "schemas/jsonschema-meta-meta-data.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/meta-data.json",
+      "sha256": "c664d438a84d58889c8edecd248ce2f945a4bc0e3b087323b11303dc136abfbe",
+      "bytes": 794,
+      "id": "https://json-schema.org/draft/2020-12/meta/meta-data"
+    },
+    {
+      "file": "schemas/jsonschema-meta-unevaluated.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/unevaluated.json",
+      "sha256": "fc99f32188da41689a9382af174dd42e8b255e4374965c157b8286556b4ab2bc",
+      "bytes": 406,
+      "id": "https://json-schema.org/draft/2020-12/meta/unevaluated"
+    },
+    {
+      "file": "schemas/jsonschema-meta-validation.json",
+      "source": "https://raw.githubusercontent.com/json-schema-org/json-schema-spec/2020-12/meta/validation.json",
+      "sha256": "e921c5b79264d3689af01c1af1ffdf692e09f1c45df90a0f08eb7288c9acdeab",
+      "bytes": 2735,
+      "id": "https://json-schema.org/draft/2020-12/meta/validation"
+    }
+  ]
+}

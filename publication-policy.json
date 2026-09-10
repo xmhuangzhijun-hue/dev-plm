@@ -1,0 +1,482 @@
+{
+  "version": 1,
+  "projects": [
+    "dev-plm",
+    "qingdan",
+    "event-inbox",
+    "paperboat-agent",
+    "rain-window-film"
+  ],
+  "public_account": "xmhuangzhijun-hue",
+  "identity_values": [
+    {
+      "value": "项目维护者",
+      "reason": "自举文档中的通用责任角色，不是真实姓名"
+    },
+    {
+      "value": "待指定",
+      "reason": "未分配责任的占位文字"
+    },
+    {
+      "value": "示例维护者",
+      "reason": "虚构示例责任角色"
+    },
+    {
+      "value": "公开版未披露提交者",
+      "reason": "真实历史在本地保留，公开版明确不包含身份"
+    },
+    {
+      "value": "Demo Maintainer",
+      "reason": "专门生成的虚构示例Git身份"
+    },
+    {
+      "value": "接入负责人（示例）",
+      "reason": "既有虚构样例中明确的角色或专门生成的Git演示身份"
+    },
+    {
+      "value": "服务负责人（示例）",
+      "reason": "既有虚构样例中明确的角色或专门生成的Git演示身份"
+    },
+    {
+      "value": "虚构项目负责人",
+      "reason": "既有虚构样例中明确的角色或专门生成的Git演示身份"
+    },
+    {
+      "value": "产品负责人（示例）",
+      "reason": "既有虚构样例中明确的角色或专门生成的Git演示身份"
+    },
+    {
+      "value": "Dev PLM Fictional Fixture",
+      "reason": "既有虚构样例中明确的角色或专门生成的Git演示身份"
+    }
+  ],
+  "allowlist": [
+    {
+      "file": "assets/project-data.js",
+      "kind": "credential_shape",
+      "value": "password\": \"DEMO_ONLY_NOT_A_PASSWORD",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "projects/qingdan/api/openapi.json",
+      "kind": "credential_shape",
+      "value": "password\": \"DEMO_ONLY_NOT_A_PASSWORD",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "credential_shape",
+      "value": "password\": \"DEMO_ONLY_NOT_A_PASSWORD",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "assets/project-data.js",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DEMO_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "projects/event-inbox/api/openapi.json",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DEMO_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "projects/qingdan/api/openapi.json",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DEMO_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DEMO_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "assets/project-data.js",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DESIGN_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "projects/dev-plm/api/openapi.json",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DESIGN_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "credential_shape",
+      "value": "access_token\": \"DESIGN_ONLY_NOT_A_VALID_TOKEN",
+      "reason": "接口契约明确无效的演示占位值；仅允许此完整文字，不放行真实认证值"
+    },
+    {
+      "file": "backend/rehearse.py",
+      "kind": "credential_shape",
+      "value": "token = authentication.issue_token",
+      "reason": "Python function call expression, not a literal credential; backend copied unchanged"
+    },
+    {
+      "file": "docker-compose.yml",
+      "kind": "absolute_path",
+      "value": "/var/lib/postgresql/data/pgdata",
+      "reason": "Standard container storage path, not a host private path"
+    },
+    {
+      "file": "docker-compose.yml",
+      "kind": "absolute_path",
+      "value": "/var/lib/postgresql/data",
+      "reason": "Standard container mount target, not a host private path"
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/var/lib/postgresql/data/pgdata",
+      "reason": "Exact reviewed container-path policy entry"
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/var/lib/postgresql/data",
+      "reason": "Exact reviewed container-path policy entry"
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "credential_shape",
+      "value": "token = authentication.issue_token",
+      "reason": "Exact Python expression policy entry"
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/assets/{name}',include_in_schema=False)",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/assets/{name}',include_in_schema=False)",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/workspace',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/workspace',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/files',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/files',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/logs',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/logs',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/logs/{record_key}',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/logs/{record_key}',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/sections/{section_id}',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/sections/{section_id}',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/documents/{document_key}',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/documents/{document_key}',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/source',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/source',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/history',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/{project_id}/history',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/online.py",
+      "kind": "absolute_path",
+      "value": "/private/operations',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/operations',tags=['网页工作区'])",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/private_site.py",
+      "kind": "absolute_path",
+      "value": "/private/'):",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/'):",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/private_site.py",
+      "kind": "absolute_path",
+      "value": "/private/api/'):",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api/'):",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/private_site.py",
+      "kind": "absolute_path",
+      "value": "/private/api',make_app(app.state.services,authentication=auth),name='browser-api')",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api',make_app(app.state.services,authentication=auth),name='browser-api')",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/index.html",
+      "kind": "absolute_path",
+      "value": "/private/assets/online.css",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/assets/online.css",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/index.html",
+      "kind": "absolute_path",
+      "value": "/private/assets/online.js",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/assets/online.js",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/online.js",
+      "kind": "absolute_path",
+      "value": "/private/api/v1'+path,",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api/v1'+path,",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/online.js",
+      "kind": "absolute_path",
+      "value": "/private/projects/'+encodeURIComponent(project);",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/projects/'+encodeURIComponent(project);",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/online.js",
+      "kind": "absolute_path",
+      "value": "/private/operations');return",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/operations');return",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/online.js",
+      "kind": "absolute_path",
+      "value": "/private/workspace');actor=workspace.actor;projects=workspace.projects;const",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/workspace');actor=workspace.actor;projects=workspace.projects;const",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "tests/test_private_gateway.py",
+      "kind": "absolute_path",
+      "value": "/private/workspace').status_code==200",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/workspace').status_code==200",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "tests/test_private_gateway.py",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/projects').status_code==200",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/projects').status_code==200",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "tests/test_private_gateway.py",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/auth/token',json={'identifier':'viewer','credential':password}).status_code==403",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/auth/token',json={'identifier':'viewer','credential':password}).status_code==403",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "tests/test_private_gateway.py",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/auth/token',headers={'Origin':'https://other.invalid'},json={'identifier':'viewer','credential':password}).status_code==403",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/auth/token',headers={'Origin':'https://other.invalid'},json={'identifier':'viewer','credential':password}).status_code==403",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "tests/test_private_gateway.py",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/auth/token',headers={'Origin':'https://testserver'},json={'identifier':'viewer','credential':password}).status_code==200",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "/private/api/v1/auth/token',headers={'Origin':'https://testserver'},json={'identifier':'viewer','credential':password}).status_code==200",
+      "reason": "Reviewed application HTTP route literal, not a host filesystem path."
+    },
+    {
+      "file": "backend/web/online.js",
+      "kind": "identity",
+      "value": "维护者",
+      "reason": "UI role label, not a person identity."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "identity",
+      "value": "维护者",
+      "reason": "UI role label, not a person identity."
+    },
+    {
+      "file": "tests/test_private_gateway.py",
+      "kind": "credential_shape",
+      "value": "password=secrets.token_urlsafe",
+      "reason": "Random test credential factory expression, no literal password."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "credential_shape",
+      "value": "password=secrets.token_urlsafe",
+      "reason": "Random test credential factory expression, no literal password."
+    },
+    {
+      "file": "tests/test_source_editor.py",
+      "kind": "absolute_path",
+      "value": "C:/secret.md','project.yaml','governance.yaml','.env','collaboration-exports/one/data.json','requirements\\R.md'])",
+      "reason": "Synthetic rejected input for path traversal test, not a live path."
+    },
+    {
+      "file": "publication-policy.json",
+      "kind": "absolute_path",
+      "value": "C:/secret.md','project.yaml','governance.yaml','.env','collaboration-exports/one/data.json','requirements\\R.md'])",
+      "reason": "Synthetic rejected input for path traversal test, not a live path."
+    }
+  ],
+  "binary_files": [
+    {
+      "file": "fixtures/agent-demo.bundle",
+      "sha256": "c6ba2a7ab99a2cdadf6c6e577d7e982fcee5b3ba7b985fc82176d32bb0679114",
+      "reason": "已核对四条提交均为虚构演示身份，内容只含纸舟两份演示提示词；字节变化必须重新审阅"
+    }
+  ]
+}

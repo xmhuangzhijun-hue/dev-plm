@@ -1,0 +1,35 @@
+id: dev-plm
+name: dev-plm
+description: 人类与 Agent 共同维护的开发工作台；以自身真实需求和版本历史自举。
+stage: 第6轮本机后端已验收；私网手机连接待用户就绪
+updated: '2026-09-05T21:26:54+08:00'
+type: software
+kind: web
+example: false
+repo: ../..
+branch: main
+local_path: .
+focus_requirement: DEV-REQ-010
+demo_date: '2026-09-05'
+code_entries:
+- id: offline-html
+  title: 离线页面结构
+  path: src/index.html
+- id: offline-js
+  title: 离线页面交互
+  path: src/assets/app.js
+- id: builder
+  title: 构建与数据读取
+  path: build.py
+- id: git-reader
+  title: Git 事实提取
+  path: tools/git_facts.py
+- id: api-routes
+  title: 后端接口路由
+  path: backend/routes.py
+- id: collaboration-services
+  title: 协作事务实现
+  path: backend/services.py
+- id: database-sync
+  title: 数据库迁移与同步
+  path: backend/db.py

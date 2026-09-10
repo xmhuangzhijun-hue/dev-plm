@@ -1,0 +1,52 @@
+groups:
+- id: prompts
+  title: 分段提示词
+  description: 内容来自独立 Markdown 文件；稳定 id 不随语气调整或回退变化。
+  objects:
+  - id: SEG-PAPER-VOICE
+    file: prompts/SEG-PAPER-VOICE.md
+    git_path: prompts/SEG-PAPER-VOICE.md
+  - id: SEG-PAPER-FACTS
+    file: prompts/SEG-PAPER-FACTS.md
+    git_path: prompts/SEG-PAPER-FACTS.md
+- id: tools
+  title: 工具面
+  description: 只有调用约定，没有可执行适配器。
+  objects:
+  - id: TOOL-PAPER-DRAFT
+    title: 整理待办草稿（示例工具）
+    reqs:
+    - REQ-PAPER-002
+    description: 输入用户授权的文字，输出待办候选。
+    content: 草稿不是已创建任务；本示例未连接任务系统。写入前需要明确操作范围与真实业务回执。
+  - id: TOOL-PAPER-STATUS
+    title: 查询操作状态（示例工具）
+    reqs:
+    - REQ-PAPER-002
+    content: 状态约定：pending / succeeded / failed / unknown。此对象只描述边界，没有实际端点。
+- id: memory
+  title: 记忆策略
+  objects:
+  - id: MEM-PAPER-SCOPE
+    title: 会话内候选与长期事实
+    reqs:
+    - REQ-PAPER-002
+    content: 临时理解留在当前会话。经用户确认且来源明确的事实才可提出长期保存候选；本示例没有记忆数据库，也没有写入私人数据。
+- id: channels
+  title: 渠道与模型配置
+  objects:
+  - id: CHANNEL-PAPER-LOCAL
+    title: 离线资料观察入口
+    reqs:
+    - REQ-PAPER-001
+    - REQ-PAPER-002
+    content: 仅通过 dev-plm 站点观察资料。未绑定聊天渠道，未配置模型供应商、账号或访问令牌；模型选择待真实实验。
+- id: permissions
+  title: 权限边界
+  objects:
+  - id: PERM-PAPER-WRITE
+    title: 写入与发送边界
+    reqs:
+    - REQ-PAPER-002
+    content: 实际产品设计候选：只在明确授权范围内执行写入；向他人发送内容需要确认对象和内容。这里没有任何发送或写入能力。
+history_repo: ../../.work/agent-demo-history

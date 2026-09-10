@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="从项目文件生成的开发工作台：需求、接口、接手说明与全程记录。">
+  <title>开发工作台</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/round2.css">
+  <link rel="stylesheet" href="assets/round3.css">
+  <script src="assets/project-data.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="工作台导航">
+    <a class="brand" href="#projects"><span class="brand-mark">d<span>·</span></span><span>开发工作台<small>DEV / PLM</small></span></a>
+    <label class="project-switch-label" for="project-switch">当前项目</label>
+    <select id="project-switch" aria-label="切换项目"></select>
+    <nav id="navigation"></nav>
+    <div class="track-note"><span class="track-dot"></span>文件驱动的项目视图<small>改项目文件 → 构建 → 刷新网页</small></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><div class="breadcrumbs"><a href="#projects">全部项目</a><span>/</span><strong id="breadcrumb-project"></strong><span id="breadcrumb-current"></span></div><div class="topbar-right"><span class="version-tag">第 6 轮 · 私网运行</span></div></header>
+    <div class="demo-banner"><span class="demo-label">示例项目</span><span>项目记录来自磁盘文件。示例代码仓库与运行环境均为虚构；未连接真实业务。</span></div>
+    <main id="main" tabindex="-1"></main>
+    <footer class="page-footer"><span>需求有来源，变化有记录，接手有入口。</span><span id="source-fingerprint"></span></footer>
+  </div>
+</div>
+<dialog id="requirement-dialog" aria-labelledby="dialog-title">
+  <div class="dialog-head"><div><span class="eyebrow">产品 / 需求</span><h2 id="dialog-title">导出需求草稿</h2></div><button class="icon-button" data-action="close-dialog" aria-label="关闭">×</button></div>
+  <form id="requirement-form">
+    <label>需求编号<input name="id" required pattern="[A-Za-z0-9][A-Za-z0-9_\-]*" maxlength="80" placeholder="例如 REQ-2026-004"></label>
+    <label>需求标题<input name="title" required maxlength="120"></label>
+    <label>用户原话<textarea name="original" rows="4" required maxlength="5000"></textarea></label>
+    <label>优先级<select name="priority"><option>中</option><option>高</option><option>低</option></select></label>
+    <p class="small muted" id="export-instructions"></p>
+    <div class="dialog-actions"><button class="button" type="button" data-action="close-dialog">取消</button><button class="button primary" type="submit">下载 Markdown 草稿</button></div>
+  </form>
+</dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

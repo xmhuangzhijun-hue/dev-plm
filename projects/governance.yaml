@@ -1,0 +1,43 @@
+tenants:
+  - id: devplm-local
+    name: dev-plm 本机工作区
+  - id: isolated-demo
+    name: 隔离租户（虚构验收示例）
+principals:
+  - id: owner
+    tenant_id: devplm-local
+    display_name: 本机维护者（验收账号）
+    actor_type: human
+    roles: [owner]
+  - id: maintainer
+    tenant_id: devplm-local
+    display_name: 协作维护者（验收账号）
+    actor_type: human
+    roles: [maintainer]
+  - id: viewer
+    tenant_id: devplm-local
+    display_name: 只读观察者（验收账号）
+    actor_type: human
+    roles: [viewer]
+  - id: other-owner
+    tenant_id: devplm-local
+    display_name: 第二位维护者（验收账号）
+    actor_type: human
+    roles: [owner]
+  - id: outsider
+    tenant_id: isolated-demo
+    display_name: 隔离租户维护者（虚构验收账号）
+    actor_type: human
+    roles: [owner]
+project_tenants:
+  dev-plm: devplm-local
+  qingdan: devplm-local
+  paperboat-agent: devplm-local
+  rain-window-film: devplm-local
+  event-inbox: isolated-demo
+project_owners:
+  dev-plm: owner
+  qingdan: owner
+  paperboat-agent: owner
+  rain-window-film: owner
+  event-inbox: outsider

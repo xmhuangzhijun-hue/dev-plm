@@ -1,0 +1,73 @@
+- id: title
+  name: 任务名称
+  type: string
+  entity: tasks.title
+  origin: 页面字段
+  required: 必填
+  rule: 1–200 字符；去除前后空白后不能为空。
+  reqs:
+  - DEMO-REQ-001
+  reason: 让人知道要做什么。
+- id: due_date
+  name: 截止日期
+  type: date | null
+  entity: tasks.due_date
+  origin: 页面字段
+  required: 可空
+  rule: YYYY-MM-DD；没有截止日期时为 null。
+  reqs:
+  - DEMO-REQ-001
+  reason: 是自然日，不把用户选择的日期误转成 UTC 时刻。
+- id: completed
+  name: 是否完成
+  type: boolean
+  entity: tasks.completed
+  origin: 页面字段
+  required: 默认 false
+  rule: true 表示已完成，false 表示待办。
+  reqs:
+  - DEMO-REQ-001
+  - DEMO-REQ-002
+  reason: 完成状态决定展示和到期提醒。
+- id: id
+  name: 任务标识
+  type: uuid
+  entity: tasks.id
+  origin: 系统补充
+  required: 主键
+  rule: 服务器分配，作为关联任务的稳定标识。
+  reqs:
+  - DEMO-REQ-001
+  - DEMO-REQ-002
+  reason: 页面不一定展示，但更新任务需要稳定目标。
+- id: owner_id
+  name: 任务归属
+  type: uuid
+  entity: tasks.owner_id
+  origin: 系统补充
+  required: 必填
+  rule: 服务端从登录身份确定，禁止信任客户端传入的归属。
+  reqs:
+  - DEMO-REQ-001
+  - DEMO-REQ-002
+  reason: 隔离不同用户的任务。
+- id: revision
+  name: 修改版本
+  type: integer
+  entity: tasks.revision
+  origin: 系统补充
+  required: 初始为 1
+  rule: 修改时递增；版本过期返回 409，客户端重新读取后处理冲突。
+  reqs:
+  - DEMO-REQ-002
+  reason: 避免多个客户端静默覆盖彼此的修改。
+- id: created_at
+  name: 创建时间
+  type: datetime
+  entity: tasks.created_at
+  origin: 系统补充
+  required: 必填
+  rule: 服务器生成带时区的创建时间。
+  reqs:
+  - DEMO-REQ-001
+  reason: 支持排序和追溯。

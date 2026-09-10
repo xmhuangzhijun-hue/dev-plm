@@ -1,0 +1,85 @@
+- id: event_id
+  name: 上游事件编号
+  type: string
+  entity: events.event_id
+  origin: 接口输入
+  required: 必填
+  rule: 同一调用方内唯一；相同编号重发相同内容返回原回执，不同内容返回 409。
+  reqs:
+  - EVENT-REQ-001
+  - EVENT-REQ-002
+  reason: 网络重试时识别同一业务事件。
+- id: event_type
+  name: 事件类型
+  type: string
+  entity: events.event_type
+  origin: 接口输入
+  required: 必填
+  rule: 1–100 字符；本例使用 order.paid，具体业务类型由调用方约定。
+  reqs:
+  - EVENT-REQ-001
+  reason: 标识事件的业务含义。
+- id: occurred_at
+  name: 业务发生时间
+  type: datetime
+  entity: events.occurred_at
+  origin: 接口输入
+  required: 必填
+  rule: 带时区的 ISO 8601 时间，由调用方提供，不替代服务接收时间。
+  reqs:
+  - EVENT-REQ-001
+  reason: 区分业务发生与网络送达时间。
+- id: payload
+  name: 业务事件内容
+  type: object
+  entity: events.payload
+  origin: 接口输入
+  required: 必填
+  rule: JSON 对象；相同事件编号或幂等键的重试正文必须一致。
+  reqs:
+  - EVENT-REQ-001
+  reason: 保存调用方提交的业务数据，不由界面推造。
+- id: receipt_id
+  name: 收件回执编号
+  type: uuid
+  entity: receipts.id
+  origin: 系统补充
+  required: 主键
+  rule: 服务分配的稳定编号；合法重复收件返回相同编号。
+  reqs:
+  - EVENT-REQ-001
+  - EVENT-REQ-002
+  reason: 供调用方确认这一次收件。
+- id: status
+  name: 收件状态
+  type: 'enum: accepted'
+  entity: receipts.status
+  origin: 系统补充
+  required: 必填
+  rule: 本轮仅 accepted，表示保存成功；不是下游处理成功。
+  reqs:
+  - EVENT-REQ-001
+  - EVENT-REQ-002
+  reason: 让调用方准确理解 202 的边界。
+- id: accepted_at
+  name: 服务收件时间
+  type: datetime
+  entity: receipts.accepted_at
+  origin: 系统补充
+  required: 必填
+  rule: 服务生成带时区时间；重复收件不改写首次收件时间。
+  reqs:
+  - EVENT-REQ-001
+  - EVENT-REQ-002
+  reason: 保留稳定可查询的收件事实。
+- id: client_id
+  name: 调用方归属
+  type: string
+  entity: events.client_id
+  origin: 系统补充
+  required: 必填
+  rule: 由后端从已验证令牌确定；不信任事件正文传入的调用方。
+  reqs:
+  - EVENT-REQ-001
+  - EVENT-REQ-002
+  reason: 隔离不同调用方的事件与回执。

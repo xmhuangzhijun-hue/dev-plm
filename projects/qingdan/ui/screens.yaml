@@ -1,0 +1,23 @@
+- id: task-list
+  title: 任务列表
+  route: /tasks
+  status: 待确认手机布局
+  purpose: 查看待办、到期提醒，切换完成状态。
+  reqs:
+  - DEMO-REQ-001
+  - DEMO-REQ-002
+  - DEMO-REQ-003
+  fields:
+  - title
+  - due_date
+  - completed
+- id: task-create
+  title: 创建任务
+  route: /tasks/new
+  status: 示例形态已调整
+  purpose: 输入任务名称，可选截止日期。
+  reqs:
+  - DEMO-REQ-001
+  fields:
+  - title
+  - due_date

@@ -1,0 +1,174 @@
+{
+  "network_creation_blocked": true,
+  "passed": 12,
+  "cases": [
+    {
+      "name": "default dialect valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "explicit default dialect valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "unsupported explicit dialect rejected",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "components",
+            "schemas",
+            "Item",
+            "$schema"
+          ],
+          "pointer": "/components/schemas/Item/$schema",
+          "message": "'https://spec.openapis.org/oas/3.1/dialect/2024-11-10' was expected",
+          "kind": "official-schema"
+        }
+      ]
+    },
+    {
+      "name": "nested minimum type rejected",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "components",
+            "schemas",
+            "Item",
+            "properties",
+            "value",
+            "minimum"
+          ],
+          "pointer": "/components/schemas/Item/properties/value/minimum",
+          "message": "'wrong' is not of type 'number'",
+          "kind": "official-schema"
+        }
+      ]
+    },
+    {
+      "name": "invalid OAS xml boolean rejected",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "components",
+            "schemas",
+            "Item",
+            "xml",
+            "attribute"
+          ],
+          "pointer": "/components/schemas/Item/xml/attribute",
+          "message": "'wrong' is not of type 'boolean'",
+          "kind": "official-schema"
+        }
+      ]
+    },
+    {
+      "name": "dangling local ref rejected",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "components",
+            "schemas",
+            "Alias",
+            "$ref"
+          ],
+          "pointer": "/components/schemas/Alias/$ref",
+          "message": "Unresolved or invalid local reference: #/components/schemas/Missing",
+          "kind": "reference-integrity"
+        }
+      ]
+    },
+    {
+      "name": "external ref fails without network",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "components",
+            "schemas",
+            "Alias",
+            "$ref"
+          ],
+          "pointer": "/components/schemas/Alias/$ref",
+          "message": "External references are unsupported by this offline single-document profile: https://example.invalid/schema.json",
+          "kind": "unsupported-reference-profile"
+        }
+      ]
+    },
+    {
+      "name": "literal ref in schema example ignored",
+      "expected_valid": true,
+      "actual_valid": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "property named schema inspected correctly",
+      "expected_valid": true,
+      "actual_valid": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "nested id explicitly unsupported",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "components",
+            "schemas",
+            "Item",
+            "$id"
+          ],
+          "pointer": "/components/schemas/Item/$id",
+          "message": "The offline single-document profile does not support nested $id resources.",
+          "kind": "unsupported-reference-profile"
+        }
+      ]
+    },
+    {
+      "name": "required info version rejected",
+      "expected_valid": false,
+      "actual_valid": false,
+      "passed": true,
+      "errors": [
+        {
+          "path": [
+            "info"
+          ],
+          "pointer": "/info",
+          "message": "'version' is a required property",
+          "kind": "official-schema"
+        }
+      ]
+    },
+    {
+      "name": "anchor valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

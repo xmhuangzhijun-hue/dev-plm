@@ -1,0 +1,231 @@
+- id: DEV-FLD-PROJECT-ID
+  name: 项目编号
+  type: string
+  entity: projects.id
+  origin: 文件标识
+  required: 依对象契约；设计候选
+  rule: 项目目录中稳定且唯一；不是数据库临时流水号。
+  reqs:
+  - DEV-REQ-002
+  - DEV-REQ-006
+  - DEV-REQ-008
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-PROJECT-TYPE
+  name: 项目类型
+  type: enum software | agent | aigc
+  entity: projects.type
+  origin: 文件字段
+  required: 依对象契约；设计候选
+  rule: 从 project.yaml 读取，决定主数据 profile。
+  reqs:
+  - DEV-REQ-009
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-REQUIREMENT-ID
+  name: 需求编号
+  type: string
+  entity: requirements.id
+  origin: 文件标识
+  required: 依对象契约；设计候选
+  rule: 项目内稳定编号；关联变更和主数据。
+  reqs:
+  - DEV-REQ-003
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-ORIGINAL
+  name: 用户原话
+  type: text
+  entity: requirements.original
+  origin: 文件正文
+  required: 依对象契约；设计候选
+  rule: 原文与当前理解分开保存，明确本轮来源。
+  reqs:
+  - DEV-REQ-003
+  - DEV-REQ-005
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-STATUS
+  name: 事实状态
+  type: string
+  entity: requirements.status
+  origin: 文件字段
+  required: 依对象契约；设计候选
+  rule: 状态来自单据，不由 Agent 从讨论或百分比推断。
+  reqs:
+  - DEV-REQ-002
+  - DEV-REQ-003
+  - DEV-REQ-008
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-CHANGE-ID
+  name: 变更编号
+  type: string
+  entity: changes.id
+  origin: 文件标识
+  required: 依对象契约；设计候选
+  rule: 一张变更可关联多需求、多 commit。
+  reqs:
+  - DEV-REQ-003
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-COMMIT-SHA
+  name: 提交哈希
+  type: string[]
+  entity: change_commits.commit_sha
+  origin: 文件关联
+  required: 依对象契约；设计候选
+  rule: 由变更单声明，并由 Git 验证；无历史写空数组，不造值。
+  reqs:
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-DIFF-STATUS
+  name: Git 提取状态
+  type: enum available | unavailable | no_history
+  entity: git_file_changes.extraction_status
+  origin: Git 派生
+  required: 依对象契约；设计候选
+  rule: 仓库不可达或提交缺失明确显示无法提取；自述不补事实。
+  reqs:
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-DIFF-TEXT
+  name: 原始变更内容
+  type: text
+  entity: git_file_changes.patch
+  origin: Git 派生
+  required: 依对象契约；设计候选
+  rule: 从 git diff 提取 before/after 与行号，不由 Agent 重写。
+  reqs:
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-REPO-PATH
+  name: 本地仓库位置
+  type: string
+  entity: repositories.local_path
+  origin: 文件字段
+  required: 依对象契约；设计候选
+  rule: 当前自举指向本仓库；在线 API 只接受登记引用，不允许任意读路径。
+  reqs:
+  - DEV-REQ-007
+  - DEV-REQ-010
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-SOURCE-PATH
+  name: 来源文件
+  type: string
+  entity: master_objects.source_path
+  origin: 文件定位
+  required: 依对象契约；设计候选
+  rule: 相对项目路径及 JSON Pointer/稳定对象 ID；不指向旧 Vault 秘密。
+  reqs:
+  - DEV-REQ-004
+  - DEV-REQ-005
+  - DEV-REQ-008
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-SOURCE-HASH
+  name: 来源快照哈希
+  type: sha256
+  entity: master_objects.source_sha256
+  origin: 文件派生
+  required: 依对象契约；设计候选
+  rule: 构建按文件内容计算；数据库读模型不得反向覆盖来源。
+  reqs:
+  - DEV-REQ-008
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-TENANT-ID
+  name: 租户范围
+  type: string
+  entity: tenants.id
+  origin: 权限登记文件
+  required: 依对象契约；设计候选
+  rule: 未来服务从认证上下文与授权映射确认，禁止信任请求正文指定。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-REVISION
+  name: 版本号
+  type: integer
+  entity: discussion_posts.revision
+  origin: 数据库协作真源
+  required: 依对象契约；设计候选
+  rule: 仅协作对象可 DB 真源；修改携带读取版本，冲突返回 409。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-IDEMPOTENCY-KEY
+  name: 幂等键
+  type: string
+  entity: idempotency_requests.idempotency_key
+  origin: 请求元数据
+  required: 依对象契约；设计候选
+  rule: 按租户、操作者与操作命名空间约束；同键不同正文返回冲突。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-JOB-STATE
+  name: 同步中间态
+  type: enum queued | validating | staging | published | failed
+  entity: sync_jobs.state
+  origin: 运行回执
+  required: 依对象契约；设计候选
+  rule: 已接受任务不等于已发布读模型；失败保留上一可用投影。
+  reqs:
+  - DEV-REQ-008
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-DISCUSSION-BODY
+  name: 讨论正文
+  type: text
+  entity: discussion_posts.body
+  origin: 数据库协作真源
+  required: 依对象契约；设计候选
+  rule: 可高频写，须提供文件导出；不能自动成为需求或项目状态。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-CLAIMANT-ID
+  name: 认领人
+  type: string
+  entity: claims.claimant_id
+  origin: 数据库协作真源
+  required: 依对象契约；设计候选
+  rule: 临时认领与项目所有者不同；必须可导出、可撤回。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-AUDIT-ACTOR
+  name: 审计操作者
+  type: string
+  entity: collaboration_audit_events.actor_id
+  origin: 数据库协作真源
+  required: 依对象契约；设计候选
+  rule: 服务从验证身份记录；Git 作者字符串不是已认证在线身份。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-AUDIT-BEFORE-AFTER
+  name: 审计前后值
+  type: object
+  entity: collaboration_audit_events.before_after
+  origin: 数据库协作真源
+  required: 依对象契约；设计候选
+  rule: 保存授权范围内的脱敏前后快照，不记录秘密；导出包含追溯引用。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。
+- id: DEV-FLD-EXPORT-STATE
+  name: 协作导出状态
+  type: enum queued | running | completed | failed
+  entity: collaboration_exports.state
+  origin: 运行回执
+  required: 依对象契约；设计候选
+  rule: 只有已完成并校验清单的文件包才算可恢复；未导出不能声称可恢复。
+  reqs:
+  - DEV-REQ-011
+  - DEV-REQ-012
+  reason: 将文件事实、Git 派生事实与数据库协作真源分清；完整表字段见 design/database.md。

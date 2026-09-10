@@ -1,0 +1,14 @@
+id: event-inbox
+name: 事件收件箱（示例）
+description: 纯后端服务：授权接收业务事件、去重保存，并返回可查询的收件回执。
+stage: 接口契约草案
+updated: '2026-09-05T12:00:00+08:00'
+kind: service
+example: true
+repo: https://code.example.invalid/demo/event-inbox.git
+branch: main
+local_path: examples/event-inbox
+focus_requirement: EVENT-REQ-001
+demo_date: '2026-09-05'
+
+type: software

@@ -1,0 +1,12 @@
+id: paperboat-agent
+name: 纸舟工作助手（虚构示例）
+type: agent
+kind: web
+example: true
+description: 虚构的工作助手资料样本：观察提示词分段、工具、记忆、渠道与权限如何关联需求和真实演示 Git diff。
+stage: 离线文档与历史演示
+updated: '2026-09-05T20:04:49+08:00'
+repo: https://code.example.invalid/fictional/paperboat-agent.git
+branch: main
+local_path: examples/paperboat-agent
+focus_requirement: REQ-PAPER-001

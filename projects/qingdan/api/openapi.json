@@ -1,0 +1,686 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "轻单任务 API · 示例草案",
+    "version": "0.3.0-draft",
+    "description": "虚构示例契约，无真实服务器。任务由后端验证身份与归属并持久化；客户端共享契约。示例 token 不可用于登录。"
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/tasks": {
+      "get": {
+        "operationId": "listTasks",
+        "summary": "读取任务列表",
+        "description": "供网页和未来的其他客户端读取同一份任务。仅返回当前用户的任务。",
+        "x-requirements": [
+          "DEMO-REQ-001",
+          "DEMO-REQ-002"
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Task"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "items": [
+                        {
+                          "id": "00000000-0000-4000-8000-000000000001",
+                          "title": "确认首页布局",
+                          "due_date": "2026-09-05",
+                          "completed": false,
+                          "revision": 1,
+                          "created_at": "2026-09-03T02:00:00Z"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或会话失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有访问令牌或令牌已过期，请重新取得访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "任务"
+        ],
+        "x-screens": [
+          "task-list"
+        ],
+        "x-fields": [
+          "id",
+          "title",
+          "due_date",
+          "completed",
+          "revision",
+          "created_at",
+          "owner_id"
+        ]
+      },
+      "post": {
+        "operationId": "createTask",
+        "summary": "创建任务",
+        "description": "任务名称必填，截止日期可空。幂等键属于请求元数据，避免网络重试创建两条任务。",
+        "x-requirements": [
+          "DEMO-REQ-001"
+        ],
+        "responses": {
+          "201": {
+            "description": "已创建任务",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "id": "00000000-0000-4000-8000-000000000001",
+                      "title": "确认首页布局",
+                      "due_date": "2026-09-05",
+                      "completed": false,
+                      "revision": 1,
+                      "created_at": "2026-09-03T02:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或会话失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有访问令牌或令牌已过期，请重新取得访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "同一个幂等键对应了不同的请求内容",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "同一幂等键对应了不同请求，请检查请求内容。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "名称为空或日期格式不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "请求字段不符合契约，请检查必填项和字段格式。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "同一键与相同内容复用已有结果；不同内容返回 409。",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "examples": {
+              "demo": {
+                "value": "demo-create-task-001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "due_date": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date",
+                    "default": null
+                  }
+                }
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构请求示例",
+                  "value": {
+                    "title": "确认首页布局",
+                    "due_date": "2026-09-05"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "任务"
+        ],
+        "x-screens": [
+          "task-create"
+        ],
+        "x-fields": [
+          "id",
+          "title",
+          "due_date",
+          "completed",
+          "revision",
+          "created_at",
+          "owner_id"
+        ]
+      }
+    },
+    "/v1/tasks/{task_id}": {
+      "patch": {
+        "operationId": "updateTask",
+        "summary": "切换完成状态",
+        "description": "客户端提交目标状态和读取到的版本；后端检查归属和版本，并返回更新后的任务。",
+        "x-requirements": [
+          "DEMO-REQ-002"
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "id": "00000000-0000-4000-8000-000000000001",
+                      "title": "确认首页布局",
+                      "due_date": "2026-09-05",
+                      "completed": true,
+                      "revision": 2,
+                      "created_at": "2026-09-03T02:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或会话失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "AUTH_REQUIRED",
+                      "message": "没有访问令牌或令牌已过期，请重新取得访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "任务不存在或无权访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "TASK_NOT_FOUND",
+                      "message": "任务不存在或当前用户无权访问。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "任务已经被其他客户端修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "REVISION_CONFLICT",
+                      "message": "任务已被其他客户端修改，请重新读取并处理冲突。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "目标状态或版本格式不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构响应示例",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "请求字段不符合契约，请检查必填项和字段格式。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "examples": {
+              "demo": {
+                "value": "00000000-0000-4000-8000-000000000001"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "completed",
+                  "revision"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "completed": {
+                    "type": "boolean"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构请求示例",
+                  "value": {
+                    "completed": true,
+                    "revision": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "任务"
+        ],
+        "x-screens": [
+          "task-list"
+        ],
+        "x-fields": [
+          "id",
+          "title",
+          "due_date",
+          "completed",
+          "revision",
+          "created_at",
+          "owner_id"
+        ]
+      }
+    },
+    "/v1/auth/token": {
+      "post": {
+        "operationId": "issueAccessToken",
+        "summary": "登录并取得短期访问令牌",
+        "description": "自定义示例登录契约。实际凭据由登记来源领取；文档占位文本不可用于认证。取得令牌后通过 Authorization: Bearer 发送；示例站点不会提交请求。",
+        "tags": [
+          "身份认证"
+        ],
+        "security": [],
+        "x-requirements": [
+          "DEMO-REQ-001",
+          "DEMO-REQ-002"
+        ],
+        "x-screens": [],
+        "x-fields": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "identifier",
+                  "password"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "writeOnly": true,
+                    "minLength": 1,
+                    "description": "由 本机私有凭据登记（公开版省略编号） 获取实际值；登记编号与文档占位文本都不是密码。"
+                  }
+                }
+              },
+              "examples": {
+                "demo": {
+                  "summary": "虚构示例；不代表已运行的接口",
+                  "value": {
+                    "identifier": "demo-user",
+                    "password": "DEMO_ONLY_NOT_A_PASSWORD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功，取得短期令牌；示例值明确无效。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "access_token": "DEMO_ONLY_NOT_A_VALID_TOKEN",
+                      "token_type": "Bearer",
+                      "expires_in": 900
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "登录凭据无效，无法签发访问令牌。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "INVALID_CREDENTIALS",
+                      "message": "登录凭据无效，无法签发访问令牌。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "请求字段不符合契约，请检查必填项和字段格式。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "demo": {
+                    "summary": "虚构示例；不代表已运行的接口",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "请求字段不符合契约，请检查必填项和字段格式。"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "先调用 issueAccessToken。文档示例令牌无效；本站不会存储或发送真实凭据。"
+      }
+    },
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "due_date",
+          "completed",
+          "revision",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "due_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "AUTH_REQUIRED",
+              "INVALID_CREDENTIALS",
+              "TASK_NOT_FOUND",
+              "IDEMPOTENCY_CONFLICT",
+              "REVISION_CONFLICT",
+              "VALIDATION_ERROR"
+            ],
+            "description": "机器可判定的错误码；逐项中文含义见 x-code-descriptions。",
+            "x-code-descriptions": {
+              "AUTH_REQUIRED": "没有访问令牌或令牌已过期，请重新取得访问令牌。",
+              "INVALID_CREDENTIALS": "登录凭据无效，无法签发访问令牌。",
+              "TASK_NOT_FOUND": "任务不存在或当前用户无权访问。",
+              "IDEMPOTENCY_CONFLICT": "同一幂等键对应了不同请求，请检查请求内容。",
+              "REVISION_CONFLICT": "任务已被其他客户端修改，请重新读取并处理冲突。",
+              "VALIDATION_ERROR": "请求字段不符合契约，请检查必填项和字段格式。"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "面向开发者的可读说明，不用于程序分支判断。"
+          }
+        }
+      },
+      "AccessToken": {
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "短期令牌。示例值明确无效，不对应任何真实凭据。"
+          },
+          "token_type": {
+            "type": "string",
+            "enum": [
+              "Bearer"
+            ]
+          },
+          "expires_in": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "有效期，单位为秒。"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://dev.qingdan.example.invalid",
+      "description": "开发环境（虚构地址，未部署）",
+      "x-environment": "development"
+    },
+    {
+      "url": "https://test.qingdan.example.invalid",
+      "description": "测试环境（虚构地址，未部署）",
+      "x-environment": "testing"
+    },
+    {
+      "url": "https://qingdan.example.invalid",
+      "description": "生产环境（虚构地址，未部署）",
+      "x-environment": "production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "身份认证",
+      "description": "取得短期访问令牌；本站不执行真实登录。"
+    },
+    {
+      "name": "任务",
+      "description": "当前用户任务的创建、读取和状态修改。"
+    }
+  ]
+}
